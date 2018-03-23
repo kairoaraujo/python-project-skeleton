@@ -1,0 +1,9 @@
+# Ignoring files
+
+venv
+.venv
+virtualenv
+.virtualenv
+*__pycache__
+.tox
+*.egg-info

@@ -1,0 +1,39 @@
+##############################################################################
+# Dev environment
+# Used for developing, functional tests and demonstration propose.
+##############################################################################
+version: '2'
+services:
+  mock-ldap:
+    image: osixia/openldap:1.1.11
+    container_name: mock-ldap-server
+    environment:
+      LDAP_ORGANISATION: fakecompany
+      LDAP_DOMAIN: fakecompany.com
+    ports:
+      - 389:389
+      - 636:636
+    restart: always
+
+  mock-phpldapadmin:
+    depends_on:
+      - mock-ldap
+    image: osixia/phpldapadmin:0.7.1
+    links:
+      - mock-ldap
+    container_name: mock-phpldapadmin
+    environment:
+      PHPLDAPADMIN_LDAP_HOSTS: mock-ldap
+    ports:
+      - 4443:443
+    restart: always
+
+  project_name:
+    image: project_name
+    container_name: project_name
+    ports:
+      - 5000:5000
+    volumes:
+      - .:/opt/project_name"
+    restart: always
+    tty: true
