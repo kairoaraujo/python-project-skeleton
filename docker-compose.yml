@@ -1,0 +1,15 @@
+##############################################################################
+# Production environment
+# Used to deploy in Production environment
+##############################################################################
+version: 2
+services:
+  project_name:
+    image: project_name
+    container_name: project_name
+    ports:
+      - 5000:5000
+    volumes:
+      - .:/opt/project_name"
+    restart: always
+    tty: true
