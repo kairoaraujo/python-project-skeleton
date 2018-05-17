@@ -4,12 +4,13 @@
 # If Flask API for example
 from flask import Flask
 from flask_restplus import Api
+from project_name import version
 from project_name import ns as ns_method
 import logging
 
 app = Flask(__name__)
 api = Api(
-    app, version='1.0', title='Project Name API',
+    app, version=version, title='Project Name API',
     description='A Project description of API'
 )
 
