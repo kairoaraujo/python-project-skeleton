@@ -6,12 +6,13 @@
 
 from project_name import version
 from flask_restplus import Namespace, Resource
-from flask import jsonify
+from flask import Flask, jsonify
 
+app = Flask(__name__)
 ns = Namespace('project', description='project description')
 
 
-ns.route('/version')
+@ns.route('/version')
 class Version(Resource):
     def get(self):
         """API version """
@@ -20,4 +21,4 @@ class Version(Resource):
             'version': version
         }
 
-        retrun jsonify(output)
+        return jsonify(output)
