@@ -6,5 +6,5 @@
 
 from os.path import dirname, join
 
-with open(join(dirname('..'), 'VERSION'), 'rb') as f:
-    version = f.read().decode('ascii').strip()
+with open(join(dirname(".."), "VERSION"), "rb") as f:
+    version = f.read().decode("ascii").strip()

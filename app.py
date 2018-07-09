@@ -9,16 +9,22 @@ from project_name.api.v1.project import ns as ns_method
 import logging
 
 logging.basicConfig(
-    level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s',
-    datefmt='%H:%M:%S')
+    level=logging.DEBUG,
+    format="%(asctime)s %(levelname)s %(message)s",
+    datefmt="%H:%M:%S",
+)
 logging.basicConfig(
-    level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s',
-    datefmt='%H:%M:%S')
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(message)s",
+    datefmt="%H:%M:%S",
+)
 
 app = Flask(__name__)
 api = Api(
-    app, version=version, title='Project Name API',
-    description='A Project description of API'
+    app,
+    version=version,
+    title="Project Name API",
+    description="A Project description of API",
 )
 
 
