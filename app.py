@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# If Flask API for example
-from flask import Flask
 from flask_restplus import Api
+from project_name import app
+from project_name import db
 from project_name import version
+from project_name.models import apikeys
 from project_name.api.v1.project import ns as ns_method
 import logging
+import os
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -19,7 +21,6 @@ logging.basicConfig(
     datefmt="%H:%M:%S",
 )
 
-app = Flask(__name__)
 api = Api(
     app,
     version=version,
@@ -29,3 +30,21 @@ api = Api(
 
 
 api.add_namespace(ns_method, path="/api/project")
+
+"""
+def bootstrap():
+    username = os.environ["BOOTSTRAP_USER"]
+    apikey = os.environ["BOOTSTRAP_KEY"]
+    logging.info(f"Bootstrap User:{username}, Apikey: {apikey}")
+    bootstrap = apikeys.BootStrap(username, apikey, 0)
+    db.session.add(bootstrap)
+    db.session.commit()
+    logging.info("Bootstrap completed.")
+
+
+tables = []
+for table in db.metadata.sorted_tables:
+    if "bootstrap" == table.name:
+        bootstrap()
+
+"""
