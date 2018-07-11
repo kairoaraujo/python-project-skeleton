@@ -12,4 +12,8 @@ services:
     volumes:
       - .:/opt/project_name"
     restart: always
+    commands:
+      - flask db init
+      - flask db migrate
+      - flask db upgrade
     tty: true

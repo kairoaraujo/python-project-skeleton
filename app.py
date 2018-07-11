@@ -6,9 +6,11 @@ from project_name import app
 from project_name import db
 from project_name import version
 from project_name.models import apikeys
-from project_name.api.v1.project import ns as ns_method
+from project_name.api.v1.project import ns as ns_project
+from project_name.api.v1.bootstrap import ns as ns_bootstrap
+from project_name.api.v1.users import ns as ns_users
+
 import logging
-import os
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -29,22 +31,6 @@ api = Api(
 )
 
 
-api.add_namespace(ns_method, path="/api/project")
-
-"""
-def bootstrap():
-    username = os.environ["BOOTSTRAP_USER"]
-    apikey = os.environ["BOOTSTRAP_KEY"]
-    logging.info(f"Bootstrap User:{username}, Apikey: {apikey}")
-    bootstrap = apikeys.BootStrap(username, apikey, 0)
-    db.session.add(bootstrap)
-    db.session.commit()
-    logging.info("Bootstrap completed.")
-
-
-tables = []
-for table in db.metadata.sorted_tables:
-    if "bootstrap" == table.name:
-        bootstrap()
-
-"""
+api.add_namespace(ns_project, path="/api/v1/project")
+api.add_namespace(ns_bootstrap, path="/api/v1/configuration")
+api.add_namespace(ns_users, path="/api/v1/configuration")
