@@ -3,12 +3,10 @@
 #
 from flask_restplus import Api
 from project_name import app
-from project_name import db
 from project_name import version
-from project_name.models import apikeys
-from project_name.api.v1.project import ns as ns_project
+from project_name.api.v1.project_name import ns as ns_project_name
 from project_name.api.v1.bootstrap import ns as ns_bootstrap
-from project_name.api.v1.users import ns as ns_users
+from project_name.api.v1.apiusers import ns as ns_users
 
 import logging
 
@@ -26,11 +24,11 @@ logging.basicConfig(
 api = Api(
     app,
     version=version,
-    title="Project Name API",
+    title="project_name API",
     description="A Project description of API",
 )
 
 
-api.add_namespace(ns_project, path="/api/v1/project")
+api.add_namespace(ns_project_name, path="/api/v1/project_name")
 api.add_namespace(ns_bootstrap, path="/api/v1/configuration")
 api.add_namespace(ns_users, path="/api/v1/configuration")

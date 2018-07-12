@@ -37,7 +37,7 @@ class Bootstrap(Resource):
         Payload required: JSON format
 
         keys:
-            - "username": The username
+            - "username": user name
             - "methods": ["ALL"] Recommended for bootstrap
 
         Sample:
@@ -56,6 +56,12 @@ class Bootstrap(Resource):
             }
         """
         payload = request.get_json(force=True)
+
+        if not status():
+            return std_response(
+                False,
+                "Bootstrap not available. Bootstrap already done."
+            )
 
         response = execute(payload)
         if "status" in response:

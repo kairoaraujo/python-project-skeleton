@@ -9,13 +9,13 @@ from flask_restplus import Namespace, Resource
 from flask import Flask, jsonify
 
 app = Flask(__name__)
-ns = Namespace("project", description="project description")
+ns = Namespace("project_name", description="project_name main")
 
 
 @ns.route("/version")
 class Version(Resource):
     def get(self):
         """API version """
-        output = {"component-name": "project", "version": version}
+        output = {"component-name": "project_name", "version": version}
 
         return jsonify(output)
