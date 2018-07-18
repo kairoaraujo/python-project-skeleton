@@ -1,6 +1,7 @@
 # Ignoring files
 
 venv
+.idea
 .venv
 virtualenv
 .virtualenv

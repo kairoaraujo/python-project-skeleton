@@ -3,25 +3,24 @@
 #
 # Author: Kairo Araujo <kairo@kairo.eti.br>
 #
+
+from flask import jsonify
 from project_name.models.apikeys import APIKeys
 from project_name.utils import std_response
-from constants.methods import ALLOWED_METHODS
-from project_name.apiusers import add_apiuser
-
-
-def _validate_methods(methods):
-    """Validates methods allowed"""
-
-    for method in methods:
-        if method not in ALLOWED_METHODS:
-            return False
-
-    return True
+from project_name.apiusers import add
+from sqlalchemy import exc
 
 
 def status():
     """Gets bootstrap status """
-    users = APIKeys.query.all()
+    try:
+        users = APIKeys.query.all()
+
+    except exc.OperationalError as e:
+        response = jsonify(std_response(False, str(e)))
+        response.status_code = 500
+
+        return response
 
     if len(users) == 0:
         return True
@@ -39,7 +38,7 @@ def execute(payload):
     ):
 
         if status():
-            response = add_apiuser(payload)
+            response = add(payload)
             return response
 
         else:

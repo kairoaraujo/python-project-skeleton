@@ -5,6 +5,7 @@
 #
 import ast
 import secrets
+from flask import jsonify
 from project_name import db
 from project_name.models.apikeys import APIKeys
 from constants.methods import ALLOWED_METHODS
@@ -12,7 +13,17 @@ from sqlalchemy import exc
 from project_name import utils
 
 
-def get_apiusers(username=None):
+def _validate_methods(methods):
+    """Validates methods allowed"""
+
+    for method in methods:
+        if method not in ALLOWED_METHODS:
+            return False
+
+    return True
+
+
+def get(username=None):
     """Return users from SQLite databse"""
 
     if username is None:
@@ -24,9 +35,9 @@ def get_apiusers(username=None):
     return apiusers
 
 
-def get_apiusers_methods(username=None):
+def get_methods(username=None):
 
-    apiusers = get_apiusers(username)
+    apiusers = get(username)
     response = {}
 
     if username is None:
@@ -34,14 +45,18 @@ def get_apiusers_methods(username=None):
             response[str(apiuser)] = {"methods": ast.literal_eval(
                 apiuser.methods)}
     else:
-        response[str(apiusers)] = {"methods": ast.literal_eval(
-            apiusers.methods)}
+        if apiusers is None:
+            response = jsonify(utils.std_response(False, "Username not found"))
+            response.status_code = 404
+        else:
+            response[str(apiusers)] = {"methods": ast.literal_eval(
+                apiusers.methods)}
 
     return response
 
 
-def get_apiusers_method_keys(username):
-    apiusers = get_apiusers(username)
+def get_method_keys(username):
+    apiusers = get(username)
     response = {}
 
     if username is None:
@@ -60,13 +75,23 @@ def get_apiusers_method_keys(username):
     return response
 
 
-def add_apiuser(payload):
-    """Executes bootstrap"""
+def add(payload):
+    """Adds API user"""
+
+    if "username" and "methods" not in payload:
+        response = jsonify(
+            utils.std_response(
+                False, "'username' and 'methods' are required."
+            )
+        )
+        response.status_code = 501
+
+        return response
 
     username = payload["username"]
     methods = payload["methods"]
 
-    if not utils._validate_methods(methods):
+    if not _validate_methods(methods):
         return utils.std_response(False, "Invalid methods")
 
     if "ALL" in methods:
@@ -91,10 +116,79 @@ def add_apiuser(payload):
             }
         )
 
-    response = {
+    response = jsonify({
         "username": str(api_user),
         "apikey": api_key,
         "methods": methods
-    }
+    })
+
+    response.status_code = 201
+
+    return response
+
+
+def update(payload, username):
+    """Updates API user data"""
+
+    response = {}
+    api_user = get(username)
+
+    if api_user is None:
+        response = jsonify(utils.std_response(False, "Username not found."))
+        response.status_code = 404
+
+        return response
+
+    response[username] = {}
+
+    if "methods" not in payload and "apikey" not in payload:
+        response = jsonify(
+            utils.std_response(
+                False, "'methods' or 'apikey' is required in payload."
+            )
+        )
+        response.status_code = 501
+
+        return response
+
+    if "methods" in payload:
+        methods = payload["methods"]
+
+        if not _validate_methods(methods):
+            response = jsonify(utils.std_response(False, "Invalid method."))
+            response.status_code = 501
+
+            return response
+
+        if "ALL" in methods:
+            methods = ALLOWED_METHODS
+            methods.remove("ALL")
+
+        if api_user.methods == f"{methods}":
+            response[username]["methods"] = "No changes. Same methods."
+
+        else:
+            # update the methods
+            api_user.methods = f"{methods}"
+
+            response[username]["methods"] = methods
+
+    if "apikey" in payload and payload["apikey"]:
+        api_key = secrets.token_hex(32)
+
+        # update the api key
+        api_user.apikey = api_key
+        response[username]["apikey"] = api_key
+
+    try:
+        # commit
+        db.session.commit()
+        response = jsonify(response)
+        response.status_code = 201
+
+    except exc.OperationalError as e:
+
+        response = jsonify(utils.std_response(False, str(e)))
+        response.status_code = 500
 
     return response

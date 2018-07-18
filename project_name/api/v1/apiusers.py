@@ -6,14 +6,14 @@
 
 from flask_restplus import Namespace, Resource
 from flask import request
-from project_name.apiusers import get_apiusers_methods, add_apiuser
+from project_name import apiusers
 from project_name.utils import requires_apikey
 
 
-ns = Namespace("apiusers", description="API Users configuration managment")
+ns = Namespace("apiusers", description="API Users configuration management")
 
 
-@ns.route("/apiuser")
+@ns.route("/apiusers")
 class Users(Resource):
 
     @requires_apikey
@@ -26,27 +26,7 @@ class Users(Resource):
                 'username': [methods_list]
             }
         """
-        response = get_apiusers_methods()
-
-        return response
-
-
-@ns.route("/apiuser/<username>")
-class Usersname(Resource):
-
-    @requires_apikey
-    def get(self, username):
-        """GET information for a specific user.
-
-        Returns:
-
-            {
-                'username1': [methods_list],
-                'username2': [methods_list],
-                ...
-            }
-        """
-        response = get_apiusers_methods(username)
+        response = apiusers.get_methods()
 
         return response
 
@@ -76,13 +56,13 @@ class Usersname(Resource):
         """
         payload = request.get_json(force=True)
 
-        response = add_apiuser(payload)
+        response = apiusers.add(payload)
 
         return response
 
 
-@ns.route("/apiuser/apikey/<username>")
-class Usersname(Resource):
+@ns.route("/apiusers/<username>")
+class Username(Resource):
 
     @requires_apikey
     def get(self, username):
@@ -91,14 +71,41 @@ class Usersname(Resource):
         Returns:
 
             {
-            'username': {
-                methods: [methods_list],
-                apikey: 'api key hash'
+                'username1': [methods_list],
+                'username2': [methods_list],
+                ...
             }
         """
-        print(username)
-        response = get_apiusers_methods(username)
+        response = apiusers.get_methods(username)
 
         return response
 
+    @requires_apikey
+    def put(self, username):
+        """PUT modifies an user methods or generates a new API keys.
+               Payload required: JSON format
 
+        keys:
+            - "methods": new list of allowed methods (GET, POST, PUT, DELETE)
+            - "apikey": Boolean. True creates new apikey | False keep apikey
+
+        Sample:
+
+            {
+                "methods": ["GET", "POST"]
+                "apikey": True
+            }
+
+        Response:
+
+            {
+                "username": "app1",
+                "apikey": "apikey hash",
+                "methods": ["GET", "POST"]
+            }
+        """
+        payload = request.get_json(force=True)
+
+        response = apiusers.update(payload, username)
+
+        return response
