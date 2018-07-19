@@ -5,7 +5,7 @@
 #
 
 from unittest import TestCase
-from project_name.utils import std_response
+from project_name import utils
 
 
 class TestUtils(TestCase):
@@ -15,6 +15,6 @@ class TestUtils(TestCase):
         """Tests std_response function."""
 
         expected_response = {"status": True, "message": "OK"}
-        response = std_response(True, "OK")
+        response = utils.std_response(True, "OK")
 
         self.assertEqual(response, expected_response)

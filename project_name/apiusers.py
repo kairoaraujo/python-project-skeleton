@@ -24,7 +24,7 @@ def _validate_methods(methods):
 
 
 def get(username=None):
-    """Return users from SQLite databse"""
+    """Return users from SQLite database"""
 
     if username is None:
         apiusers = APIKeys.query.all()
@@ -36,30 +36,35 @@ def get(username=None):
 
 
 def get_methods(username=None):
+    """Gets the user's methods"""
 
     apiusers = get(username)
     response = {}
 
-    if username is None:
+    if apiusers is None:
+        response = jsonify(utils.std_response(False, "Username not found"))
+        response.status_code = 404
+
+    elif type(apiusers) is list:
         for apiuser in apiusers:
             response[str(apiuser)] = {"methods": ast.literal_eval(
                 apiuser.methods)}
     else:
-        if apiusers is None:
-            response = jsonify(utils.std_response(False, "Username not found"))
-            response.status_code = 404
-        else:
-            response[str(apiusers)] = {"methods": ast.literal_eval(
-                apiusers.methods)}
+        response[str(apiusers)] = {"methods": ast.literal_eval(
+            apiusers.methods)}
 
     return response
 
 
-def get_method_keys(username):
+def get_methods_keys(username):
     apiusers = get(username)
     response = {}
 
-    if username is None:
+    if apiusers is None:
+        response = jsonify(utils.std_response(False, "Username not found"))
+        response.status_code = 404
+
+    elif type(apiusers) is list:
         for apiuser in apiusers:
             response[str(apiuser)] = {
                 "apikey": apiuser.apikey,
@@ -108,13 +113,15 @@ def add(payload):
         return utils.std_response(False, str(e))
 
     except exc.IntegrityError as e:
-        return utils.std_response(
-            False,
-            {
-                "message": "username already exists.",
-                "error": str(e)
-            }
+        response = jsonify(
+            utils.std_response(
+                False,
+                "username already exists. ERROR:" + str(e)
+            )
         )
+        response.status_code = 501
+
+        return response
 
     response = jsonify({
         "username": str(api_user),

@@ -5,7 +5,8 @@
 #
 from functools import wraps
 from flask import request, jsonify
-from project_name.apiusers import get_method_keys
+from project_name.apiusers import get_methods_keys
+from project_name import bootstrap
 
 
 def std_response(state, message):
@@ -19,10 +20,18 @@ def std_response(state, message):
     return response
 
 
-def requires_apikey(function):
+def requires_apikey(function_wrap):
     """Decorator to validate the API Keys """
-    @wraps(function)
+    @wraps(function_wrap)
     def decorated_function(*args, **kwargs):
+
+        if bootstrap.status():
+            response = jsonify(
+                std_response(False, "System without bootstrap.")
+            )
+            response.status_code = 500
+
+            return response
 
         # request
         apikey = request.headers.get("x-api-key")
@@ -40,7 +49,8 @@ def requires_apikey(function):
         method = str(request.method)
 
         # database
-        db_apiuser = get_method_keys(username)
+
+        db_apiuser = get_methods_keys(username)
         if (
             username and
             username in db_apiuser.keys() and
@@ -58,7 +68,7 @@ def requires_apikey(function):
 
             else:
 
-                function_result = function(*args, **kwargs)
+                function_result = function_wrap(*args, **kwargs)
 
                 return function_result
 

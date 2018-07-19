@@ -6,7 +6,7 @@
 
 from flask import jsonify
 from project_name.models.apikeys import APIKeys
-from project_name.utils import std_response
+from project_name import utils
 from project_name.apiusers import add
 from sqlalchemy import exc
 
@@ -17,7 +17,7 @@ def status():
         users = APIKeys.query.all()
 
     except exc.OperationalError as e:
-        response = jsonify(std_response(False, str(e)))
+        response = jsonify(utils.std_response(False, str(e)))
         response.status_code = 500
 
         return response
@@ -44,11 +44,11 @@ def execute(payload):
 
         else:
 
-            return std_response(
+            return utils.std_response(
                 False,
                 "Bootstrap not allowed. Bootstrap already implemented."
                 )
 
     else:
 
-        return std_response(False, "Invalid payload.")
+        return utils.std_response(False, "Invalid payload.")
