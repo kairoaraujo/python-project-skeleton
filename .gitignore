@@ -8,3 +8,5 @@ virtualenv
 *__pycache__
 .tox
 *.egg-info
+.coverage
+htmlcov

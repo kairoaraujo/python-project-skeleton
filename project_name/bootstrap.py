@@ -33,7 +33,8 @@ def execute(payload):
     """Executes bootstrap"""
 
     if (
-        "username" and "methods" in payload and
+        "username" in payload and
+        "methods" in payload and
         type(payload["methods"]) is list
     ):
 
