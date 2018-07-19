@@ -12,7 +12,7 @@ from project_name.apiusers import get
 from project_name.apiusers import get_methods
 from project_name.apiusers import get_methods_keys
 from project_name.apiusers import add
-
+from sqlalchemy import exc
 import json
 
 
@@ -117,3 +117,51 @@ class TestAPIUsers(TestCase):
 
         with app.app_context():
             self.assertEqual(add(test_payload).status_code, 201)
+
+        test_payload = {
+            "username": "testuser",
+            "methods": ["ALL"]
+        }
+
+        with app.app_context():
+            self.assertEqual(add(test_payload).status_code, 201)
+
+
+    def test_add_invalid_payload(self):
+        """Tests the function add with invalid payload"""
+
+        test_payload = {
+            "methods": ["GET", "PUT", "POST"]
+        }
+
+        with app.app_context():
+            self.assertEqual(add(test_payload).status_code,  400)
+
+    def test_add_invalid_method(self):
+        """Tests the function add with invalid method"""
+
+        test_payload = {
+            "username": "testuser",
+            "methods": ["GET", "INVALID", "PUT", "POST"]
+        }
+
+        with app.app_context():
+            self.assertEqual(add(test_payload).status_code,  400)
+
+
+    @patch("project_name.apiusers.db")
+    def test_add_exceptions(self, mock_db):
+        """Tests the function exceptions add"""
+
+        test_payload = {
+            "username": "testuser",
+            "methods": ["GET", "INVALID", "PUT", "POST"]
+        }
+
+        mock_db.session.add.return_value = True
+        mock_db.session.commit.side_effect = exc.IntegrityError
+
+        with app.app_context():
+            self.assertEqual(add(test_payload).status_code,  501)
+
+

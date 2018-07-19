@@ -83,13 +83,13 @@ def get_methods_keys(username):
 def add(payload):
     """Adds API user"""
 
-    if "username" and "methods" not in payload:
+    if "username" not in payload or "methods" not in payload:
         response = jsonify(
             utils.std_response(
                 False, "'username' and 'methods' are required."
             )
         )
-        response.status_code = 501
+        response.status_code = 400
 
         return response
 
@@ -97,7 +97,12 @@ def add(payload):
     methods = payload["methods"]
 
     if not _validate_methods(methods):
-        return utils.std_response(False, "Invalid methods")
+        response =  jsonify(
+            utils.std_response(False, "Invalid methods")
+        )
+        response.status_code = 400
+
+        return response
 
     if "ALL" in methods:
         methods = ALLOWED_METHODS
@@ -108,9 +113,6 @@ def add(payload):
         api_user = APIKeys(username, api_key, True, f"{methods}")
         db.session.add(api_user)
         db.session.commit()
-
-    except exc.OperationalError as e:
-        return utils.std_response(False, str(e))
 
     except exc.IntegrityError as e:
         response = jsonify(
