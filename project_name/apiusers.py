@@ -96,17 +96,15 @@ def add(payload):
     username = payload["username"]
     methods = payload["methods"]
 
+    if "ALL" in methods:
+        methods = ALLOWED_METHODS.copy()
+        methods.remove("ALL")
+
     if not _validate_methods(methods):
-        response =  jsonify(
-            utils.std_response(False, "Invalid methods")
-        )
+        response = jsonify(utils.std_response(False, "Invalid method(s)."))
         response.status_code = 400
 
         return response
-
-    if "ALL" in methods:
-        methods = ALLOWED_METHODS
-        methods.remove("ALL")
 
     try:
         api_key = secrets.token_hex(32)
@@ -121,7 +119,7 @@ def add(payload):
                 "username already exists. ERROR:" + str(e)
             )
         )
-        response.status_code = 501
+        response.status_code = 400
 
         return response
 
@@ -144,7 +142,7 @@ def update(payload, username):
 
     if api_user is None:
         response = jsonify(utils.std_response(False, "Username not found."))
-        response.status_code = 404
+        response.status_code = 400
 
         return response
 
@@ -156,22 +154,22 @@ def update(payload, username):
                 False, "'methods' or 'apikey' is required in payload."
             )
         )
-        response.status_code = 501
+        response.status_code = 400
 
         return response
 
     if "methods" in payload:
         methods = payload["methods"]
 
+        if "ALL" in methods:
+            methods = ALLOWED_METHODS.copy()
+            methods.remove("ALL")
+
         if not _validate_methods(methods):
-            response = jsonify(utils.std_response(False, "Invalid method."))
-            response.status_code = 501
+            response = jsonify(utils.std_response(False, "Invalid method(s)."))
+            response.status_code = 400
 
             return response
-
-        if "ALL" in methods:
-            methods = ALLOWED_METHODS
-            methods.remove("ALL")
 
         if api_user.methods == f"{methods}":
             response[username]["methods"] = "No changes. Same methods."
@@ -196,8 +194,9 @@ def update(payload, username):
         response.status_code = 201
 
     except exc.OperationalError as e:
-
         response = jsonify(utils.std_response(False, str(e)))
         response.status_code = 500
+
+        return response
 
     return response
