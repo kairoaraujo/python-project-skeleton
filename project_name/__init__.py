@@ -8,8 +8,8 @@ from os.path import dirname, join
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from settings import DEBUG
-from constants.database import SQLALCHEMY_DATABASE_URI
-from constants.database import SQLALCHEMY_TRACK_MODIFICATIONS
+from project_name.constants.database import SQLALCHEMY_DATABASE_URI
+from project_name.constants.database import SQLALCHEMY_TRACK_MODIFICATIONS
 
 with open(join(dirname(".."), "VERSION"), "rb") as f:
     version = f.read().decode("ascii").strip()

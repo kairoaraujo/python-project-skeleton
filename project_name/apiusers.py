@@ -8,7 +8,7 @@ import secrets
 from flask import jsonify
 from project_name import db
 from project_name.models.apikeys import APIKeys
-from constants.methods import ALLOWED_METHODS
+from project_name.constants.methods import ALLOWED_METHODS
 from sqlalchemy import exc
 from project_name import utils
 

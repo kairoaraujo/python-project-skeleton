@@ -6,7 +6,7 @@
 from unittest import TestCase
 from project_name import db
 from app import app
-from constants.database import PROJECT_ROOT
+from project_name.constants.database import PROJECT_ROOT
 import os
 import json
 
