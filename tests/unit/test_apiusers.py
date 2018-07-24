@@ -335,11 +335,13 @@ class TestAPIUsers(TestCase):
                 }
             )
 
+    @patch("project_name.apiusers.get")
     @patch("project_name.apiusers.db")
-    def test_update_exceptions(self, mock_db):
+    def test_update_exceptions(self, mock_db, mock_get):
         """Tests function update exceptions"""
 
         username = 'appadmin'
+        mock_get.return_value = self.appadmin
         test_payload = {
             "methods": ["GET", "PUT", "POST", "DELETE"],
             "apikey": True
