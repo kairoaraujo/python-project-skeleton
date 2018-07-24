@@ -23,7 +23,9 @@ class Users(Resource):
         Returns:
 
             {
-                'username': [methods_list]
+                'username1': [methods_list],
+                'username2': [methods_list],
+                ...
             }
         """
         response = apiusers.get_methods()
@@ -71,9 +73,7 @@ class Username(Resource):
         Returns:
 
             {
-                'username1': [methods_list],
-                'username2': [methods_list],
-                ...
+                'username': [methods_list]
             }
         """
         response = apiusers.get_methods(username)
@@ -92,7 +92,7 @@ class Username(Resource):
         Sample:
 
             {
-                "methods": ["GET", "POST"]
+                "methods": ["GET", "POST"],
                 "apikey": True
             }
 
