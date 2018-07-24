@@ -46,6 +46,7 @@ class Bootstrap(Resource):
         keys:
             - "username": user name
             - "methods": ["ALL"] Recommended for bootstrap
+            - "apikey": [optional] declared API Key or empty to auto generate
 
         Sample:
 

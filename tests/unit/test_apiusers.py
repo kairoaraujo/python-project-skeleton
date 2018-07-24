@@ -127,6 +127,25 @@ class TestAPIUsers(TestCase):
         with app.app_context():
             self.assertEqual(add(test_payload).status_code, 201)
 
+    @patch("project_name.apiusers.db")
+    def test_add_ok_with_apikey(self, mock_db):
+        """Tests function add with apikey declared"""
+
+        test_payload = {
+            "username": "testuser",
+            "methods": ["GET", "PUT", "POST"],
+            "apikey": "abcdefgh"
+        }
+
+        mock_db.session.add.return_value = True
+        mock_db.session.commit.return_value = True
+
+        with app.app_context():
+            response = add(test_payload)
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(test_payload, json.loads(response.data))
+
     def test_add_invalid_payload(self):
         """Tests function add with a wrong payload"""
 

@@ -40,6 +40,7 @@ class Users(Resource):
         keys:
             - "username": user name
             - "methods": list of allowed methods (GET, POST, PUT, DELETE)
+            - "apikey": [optional] declared API Key or empty to auto generate
 
         Sample:
 

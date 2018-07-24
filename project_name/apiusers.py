@@ -107,7 +107,10 @@ def add(payload):
         return response
 
     try:
-        api_key = secrets.token_hex(32)
+        if "apikey" in payload and payload["apikey"]:
+            api_key = payload["apikey"]
+        else:
+            api_key = secrets.token_hex(32)
         api_user = APIKeys(username, api_key, True, f"{methods}")
         db.session.add(api_user)
         db.session.commit()
