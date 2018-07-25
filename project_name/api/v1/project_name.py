@@ -6,9 +6,8 @@
 
 from project_name import version
 from flask_restplus import Namespace, Resource
-from flask import Flask, jsonify
+from flask import jsonify
 
-app = Flask(__name__)
 ns = Namespace("project_name", description="project_name main")
 
 

@@ -70,6 +70,42 @@ class TestAPIUsers(TestCase):
             response.data
         )
 
+    def test_apiusers_invalid_username_headers(self):
+        """Tests /apiusers endpoint method GET"""
+
+        # tests without bootstrap
+        response = self.test.get("/api/v1/configuration/apiusers")
+        self.assertEqual(response.status_code, 500)
+
+        # perform boostrap with one user
+        payload = {
+            "username": "appadmin",
+            "methods": ["ALL"]
+        }
+
+        # perform bootstrap
+        response = self.test.post(
+            "/api/v1/configuration/bootstrap",
+            data=json.dumps(payload),
+            content_type='application/json'
+        )
+
+        # tests if the user is authenticated
+        headers = {
+            "x-api-key": json.loads(response.data)["apikey"],
+            "username": "idontexist"
+        }
+
+        response = self.test.get(
+            "/api/v1/configuration/apiusers",
+            headers=headers
+        )
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(
+            b'{"message":"Username not found","status":false}\n',
+            response.data
+        )
+
     def test_apiusers_post(self):
         """Tests /apiusers endpoint method POST"""
         payload = {

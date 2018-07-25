@@ -18,3 +18,12 @@ class TestUtils(TestCase):
         response = utils.std_response(True, "OK")
 
         self.assertEqual(response, expected_response)
+
+    def test_validate_methods(self):
+        """Tests internal validate_methods"""
+
+        self.assertTrue(
+            utils.validate_methods(["GET", "PUT", "POST", "DELETE"]))
+        self.assertTrue(utils.validate_methods(["ALL"]))
+        self.assertFalse(utils.validate_methods(["INVALID_METHOD"]))
+        self.assertFalse(utils.validate_methods("STRING"))

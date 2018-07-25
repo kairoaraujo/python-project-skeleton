@@ -7,7 +7,6 @@
 from unittest import TestCase
 from unittest.mock import patch
 from project_name import app
-from project_name.apiusers import _validate_methods
 from project_name.apiusers import get
 from project_name.apiusers import get_methods
 from project_name.apiusers import get_methods_keys
@@ -36,14 +35,6 @@ class TestAPIUsers(TestCase):
         self.kairo.username = "kairo"
         self.kairo.methods = '["GET"]'
         self.kairo.apikey = 'kairoapikey'
-
-    def test__validate_methods(self):
-        """Tests internal validate_methods"""
-
-        self.assertTrue(_validate_methods(["GET", "PUT", "POST", "DELETE"]))
-        self.assertTrue(_validate_methods(["ALL"]))
-        self.assertFalse(_validate_methods(["INVALID_METHOD"]))
-        self.assertFalse(_validate_methods("STRING"))
 
     @patch("project_name.apiusers.APIKeys.query")
     def test_get(self, mock_apikeys_query):

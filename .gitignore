@@ -10,3 +10,4 @@ virtualenv
 *.egg-info
 .coverage
 htmlcov
+project_name/certs/*rsa*

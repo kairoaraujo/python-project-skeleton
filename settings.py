@@ -7,4 +7,4 @@
 #
 
 # DEBUG mode. DO NOT ENABLE it for production environment.
-DEBUG = True
+DEBUG = False

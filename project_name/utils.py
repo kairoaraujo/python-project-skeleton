@@ -5,8 +5,19 @@
 #
 from functools import wraps
 from flask import request, jsonify
+from project_name.constants.methods import ALLOWED_METHODS
 from project_name.apiusers import get_methods_keys
 from project_name import bootstrap
+
+
+def validate_methods(methods):
+    """Validates methods allowed"""
+
+    for method in methods:
+        if method not in ALLOWED_METHODS:
+            return False
+
+    return True
 
 
 def std_response(state, message):
@@ -49,9 +60,15 @@ def requires_apikey(function_wrap):
         method = str(request.method)
 
         # database
-
         db_apiuser = get_methods_keys(username)
+
         if (
+            hasattr(db_apiuser, "status_code") and
+            db_apiuser.status_code == 404
+        ):
+            return db_apiuser
+
+        elif (
             username and
             username in db_apiuser.keys() and
             apikey and

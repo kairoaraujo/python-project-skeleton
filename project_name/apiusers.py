@@ -8,19 +8,9 @@ import secrets
 from flask import jsonify
 from project_name import db
 from project_name.models.apikeys import APIKeys
-from project_name.constants.methods import ALLOWED_METHODS
 from sqlalchemy import exc
 from project_name import utils
-
-
-def _validate_methods(methods):
-    """Validates methods allowed"""
-
-    for method in methods:
-        if method not in ALLOWED_METHODS:
-            return False
-
-    return True
+from project_name.constants.methods import ALLOWED_METHODS
 
 
 def get(username=None):
@@ -100,7 +90,7 @@ def add(payload):
         methods = ALLOWED_METHODS.copy()
         methods.remove("ALL")
 
-    if not _validate_methods(methods):
+    if not utils.validate_methods(methods):
         response = jsonify(utils.std_response(False, "Invalid method(s)."))
         response.status_code = 400
 
@@ -168,7 +158,7 @@ def update(payload, username):
             methods = ALLOWED_METHODS.copy()
             methods.remove("ALL")
 
-        if not _validate_methods(methods):
+        if not utils.validate_methods(methods):
             response = jsonify(utils.std_response(False, "Invalid method(s)."))
             response.status_code = 400
 
