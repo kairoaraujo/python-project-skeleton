@@ -17,7 +17,10 @@ class WWWMockyIO(Resource):
 
     @requires_apikey
     def post(self):
-        """API version """
+        """Post a request to external API using JWT Token
+
+        A JSON payload is required.
+        """
 
         payload = request.get_json(force=True)
 

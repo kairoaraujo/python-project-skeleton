@@ -113,6 +113,7 @@ def _run_request(method, url, json_token, verify):
 
 
 def request(*args, **kargs):
+    """Does external requests using JWT signature."""
 
     if (
             len(args) < 1 or
