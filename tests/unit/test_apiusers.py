@@ -7,11 +7,14 @@
 from unittest import TestCase
 from unittest.mock import patch
 from project_name import app
-from project_name.apiusers import get
-from project_name.apiusers import get_methods
-from project_name.apiusers import get_methods_keys
-from project_name.apiusers import add
-from project_name.apiusers import update
+from project_name.apiusers import (
+    get,
+    get_methods,
+    get_methods_keys,
+    add,
+    update,
+    delete
+)
 from sqlalchemy import exc
 import json
 
@@ -217,6 +220,27 @@ class TestAPIUsers(TestCase):
                 }
             )
 
+        test_payload = {
+            "username": "testuser",
+            "methods": ["GET", "PUT", "POST"]
+        }
+
+        mock_db.session.add.return_value = True
+        mock_db.session.commit.side_effect = exc.OperationalError(
+            "statement", "params", "orig"
+        )
+
+        with app.app_context():
+            response = add(test_payload)
+            self.assertEqual(response.status_code, 500)
+            self.assertEqual(
+                json.loads(response.data),
+                {
+                    "status": False,
+                    "message": "(builtins.str) orig"
+                }
+            )
+
     @patch("project_name.apiusers.secrets.token_hex")
     @patch("project_name.apiusers.db")
     @patch("project_name.apiusers.get")
@@ -360,6 +384,56 @@ class TestAPIUsers(TestCase):
 
         with app.app_context():
             response = update(test_payload, username)
+            self.assertEqual(response.status_code, 500)
+            self.assertEqual(
+                json.loads(response.data),
+                {
+                    "status": False,
+                    "message": "(builtins.str) orig"
+                }
+            )
+
+    @patch("project_name.apiusers.get")
+    @patch("project_name.apiusers.db")
+    def test_delete(self, mock_db, mock_get):
+        """Tests function delete"""
+
+        username = "kairo"
+        mock_get.return_value = self.kairo
+        mock_db.session.return_value = True
+        with app.app_context():
+            response = delete(username)
+        self.assertEqual(response.status_code, 204)
+
+    @patch("project_name.apiusers.get")
+    @patch("project_name.apiusers.db")
+    def test_delete_user_notfound(self, mock_db, mock_get):
+        """Tests function delete with invalid user"""
+
+        username = "kairo"
+        mock_get.return_value = None
+        mock_db.session.return_value = True
+        with app.app_context():
+            response = delete(username)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            response.data,
+            b'{"message":"Username not found.","status":false}\n'
+        )
+
+    @patch("project_name.apiusers.get")
+    @patch("project_name.apiusers.db")
+    def test_delete_user_exceptions(self, mock_db, mock_get):
+        """Tests function delete exceptions"""
+
+        username = "kairo"
+        mock_get.return_value = self.kairo
+        mock_db.session.commit.side_effect = exc.OperationalError(
+            "statement", "params", "orig"
+        )
+
+        with app.app_context():
+            response = delete(username)
             self.assertEqual(response.status_code, 500)
             self.assertEqual(
                 json.loads(response.data),

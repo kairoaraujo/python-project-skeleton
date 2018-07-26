@@ -203,3 +203,30 @@ def update(payload, username):
         return response
 
     return response
+
+
+def delete(username):
+    """Deletes a API User"""
+
+    api_user = get(username)
+
+    if api_user is None:
+        response = jsonify(utils.std_response(False, "Username not found."))
+        response.status_code = 400
+
+        return response
+
+    try:
+        db.session.delete(api_user)
+        db.session.commit()
+        response = jsonify(utils.std_response(True, f"{username} deleted."))
+        response.status_code = 204
+
+        return response
+
+    except exc.OperationalError as e:
+        response = jsonify(utils.std_response(
+            False, str(e).split("[")[0].strip()))
+        response.status_code = 500
+
+    return response

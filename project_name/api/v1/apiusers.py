@@ -110,3 +110,11 @@ class Username(Resource):
         response = apiusers.update(payload, username)
 
         return response
+
+    @requires_apikey
+    def delete(self, username):
+        """DELETE removes an API User."""
+
+        response = apiusers.delete(username)
+
+        return response
