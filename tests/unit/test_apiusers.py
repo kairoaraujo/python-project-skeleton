@@ -213,9 +213,7 @@ class TestAPIUsers(TestCase):
                 {
                     "status": False,
                     "message": "username already exists. ERROR:(builtins.str) "
-                               "orig [SQL: 'statement'] [parameters: 'params']"
-                               " (Background on this error at: "
-                               "http://sqlalche.me/e/gkpj)"
+                               "orig"
                 }
             )
 
@@ -367,9 +365,6 @@ class TestAPIUsers(TestCase):
                 json.loads(response.data),
                 {
                     "status": False,
-                    "message": "(builtins.str) "
-                               "orig [SQL: 'statement'] [parameters: 'params']"
-                               " (Background on this error at: "
-                               "http://sqlalche.me/e/e3q8)"
+                    "message": "(builtins.str) orig"
                 }
             )

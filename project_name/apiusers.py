@@ -109,12 +109,21 @@ def add(payload):
         response = jsonify(
             utils.std_response(
                 False,
-                "username already exists. ERROR:" + str(e)
+                "username already exists. ERROR:" +
+                str(e).split("[")[0].strip()
             )
         )
         response.status_code = 400
 
         return response
+
+    except exc.OperationalError as e:
+            response = jsonify(
+                utils.std_response(False, str(e).split("[")[0].strip())
+            )
+            response.status_code = 500
+
+            return response
 
     response = jsonify({
         "username": str(api_user),
@@ -187,7 +196,8 @@ def update(payload, username):
         response.status_code = 201
 
     except exc.OperationalError as e:
-        response = jsonify(utils.std_response(False, str(e)))
+        response = jsonify(utils.std_response(
+            False, str(e).split("[")[0].strip()))
         response.status_code = 500
 
         return response

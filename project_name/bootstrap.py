@@ -17,7 +17,8 @@ def status():
         users = APIKeys.query.all()
 
     except exc.OperationalError as e:
-        response = jsonify(utils.std_response(False, str(e)))
+        response = jsonify(utils.std_response(
+            False, str(e).split("[")[0].strip()))
         response.status_code = 500
 
         return response

@@ -41,9 +41,7 @@ class TestBootstrap(TestCase):
         ]
 
         expected_output = {
-            "message": "(builtins.str) org [SQL: 'statement'] [parameters: "
-                       "'params'] (Background on this error at: "
-                       "http://sqlalche.me/e/e3q8)",
+            "message": "(builtins.str) org",
             "status": False
         }
 

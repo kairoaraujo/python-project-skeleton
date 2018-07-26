@@ -12,8 +12,8 @@ from project_name import jwt_client
 ns = Namespace("jwt_calls", description="JWT Calls")
 
 
-@ns.route("/sample_call")
-class Version(Resource):
+@ns.route("/www_mocky_io")
+class WWWMockyIO(Resource):
 
     @requires_apikey
     def post(self):
@@ -22,7 +22,7 @@ class Version(Resource):
         payload = request.get_json(force=True)
 
         response = jwt_client.request(
-            "DELETE",
+            "GET",
             "https://www.mocky.io/v2/5185415ba171ea3a00704eed",
             payload=payload,
             verify=False

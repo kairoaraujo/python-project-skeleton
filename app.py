@@ -7,7 +7,7 @@ from project_name import version
 from project_name.api.v1.project_name import ns as ns_project_name
 from project_name.api.v1.bootstrap import ns as ns_bootstrap
 from project_name.api.v1.apiusers import ns as ns_apiusers
-from project_name.api.v1.sample_call import ns as ns_jwt_calls
+from project_name.api.v1.jwt_calls import ns as ns_jwt_calls
 
 import logging
 

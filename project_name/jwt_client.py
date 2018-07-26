@@ -15,32 +15,42 @@ def _private_key(private_cert_file=None):
     if private_cert_file is None:
         private_cert_file = "project_name/certs/id_rsa"
 
-    with open(private_cert_file) as p_cf:
-        return p_cf.read()
+    try:
+        with open(private_cert_file) as p_cf:
+            return p_cf.read()
+
+    except (FileNotFoundError, PermissionError, FileExistsError) as e:
+        raise e
 
 
 def _encode(payload, private_cert_file=None):
     """Encodes the payload using certs available in certs dir"""
 
+    try:
+        private_key = _private_key(private_cert_file)
+
+    except(FileNotFoundError, PermissionError, FileExistsError) as e:
+        raise e
+
     payload_encoded = jwt.encode(
         payload,
-        _private_key(private_cert_file),
+        private_key,
         algorithm="RS256")
 
-    token = json.dumps(
-        {"token": payload_encoded.decode("utf-8")}
-    )
+    token = payload_encoded
 
     return token
 
 
-def _run_request(method, url, data, verify):
+def _run_request(method, url, json_token, verify):
+    """Runs the requests module using JWT in different methods"""
+
     try:
         if method == "GET":
             result = requests.get(
                 url,
                 headers={"Content-Type": "application/json"},
-                data=data,
+                data=json_token,
                 verify=verify
             )
             response = jsonify(result.json())
@@ -51,7 +61,7 @@ def _run_request(method, url, data, verify):
             result = requests.post(
                 url,
                 headers={"Content-Type": "application/json"},
-                data=data,
+                data=json_token,
                 verify=verify
             )
             response = jsonify(result.json())
@@ -62,7 +72,7 @@ def _run_request(method, url, data, verify):
             result = requests.put(
                 url,
                 headers={"Content-Type": "application/json"},
-                data=data,
+                data=json_token,
                 verify=verify
             )
             response = jsonify(result.json())
@@ -73,7 +83,7 @@ def _run_request(method, url, data, verify):
             result = requests.delete(
                 url,
                 headers={"Content-Type": "application/json"},
-                data=data,
+                data=json_token,
                 verify=verify
             )
 
@@ -91,6 +101,7 @@ def _run_request(method, url, data, verify):
     except (
             requests.exceptions.MissingSchema,
             requests.exceptions.ConnectionError) as e:
+
         response = jsonify(std_response(
             False,
             str(e)
@@ -103,8 +114,22 @@ def _run_request(method, url, data, verify):
 
 def request(*args, **kargs):
 
+    if (
+            len(args) < 1 or
+            not args[0] or
+            not args[1]
+    ):
+        response = jsonify(std_response(
+            False,
+            "Method and URL are required."
+        ))
+
+        response.status_code = 400
+        return response
+
     method = args[0]
     url = args[1]
+
     if "payload" not in kargs:
         response = jsonify(std_response(
             False,
@@ -129,7 +154,7 @@ def request(*args, **kargs):
     try:
         data = _encode(kargs["payload"], private_cert_file)
 
-    except TypeError as e:
+    except (FileNotFoundError, PermissionError, FileExistsError) as e:
 
         response = jsonify(std_response(
             False,
@@ -140,17 +165,8 @@ def request(*args, **kargs):
 
         return response
 
-    if url is None:
-        response = jsonify(std_response(
-            False,
-            "URL is required."
-        ))
-
-        response.status_code = 400
-        return response
-
     else:
-
-        response = _run_request(method, url, data, verify)
+        json_token = json.dumps({"token": data.decode("utf-8")})
+        response = _run_request(method, url, json_token, verify)
 
     return response
