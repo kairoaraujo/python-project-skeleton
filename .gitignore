@@ -11,3 +11,6 @@ virtualenv
 .coverage
 htmlcov
 project_name/certs/*rsa*
+project_name/databases/*.db
+migrations
+
