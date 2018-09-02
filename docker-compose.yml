@@ -2,7 +2,7 @@
 # Production environment
 # Used to deploy in Production environment
 ##############################################################################
-version: 2
+version: "2"
 services:
   project_name:
     image: project_name
@@ -12,8 +12,4 @@ services:
     volumes:
       - .:/opt/project_name"
     restart: always
-    commands:
-      - flask db init
-      - flask db migrate
-      - flask db upgrade
     tty: true

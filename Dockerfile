@@ -1,6 +1,6 @@
 # Dockerfile
 
-FROM python:3.6.3
+FROM python:3.7.0
 
 ADD requirements.txt /requirements.txt
 
@@ -11,8 +11,11 @@ WORKDIR /opt/project_name
 
 add . .
 
+RUN flask db init
+RUN flask db migrate
+RUN flask db upgrade
+
 EXPOSE 5000
 
-# If Flask project
-# ENV FLASK_APP=/opt/project_name/app.py
-# CMD ["flask", "run", "--host", "0.0.0.0", "--port", "5000", "--debugger", "--reload"]
+ENV FLASK_APP=/opt/project_name/app.py
+CMD ["flask", "run", "--host", "0.0.0.0"]
